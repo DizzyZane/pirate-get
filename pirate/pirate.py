@@ -241,6 +241,7 @@ def connect_mirror(mirror, printer, pages, category, sort, action, search):
             mirror=mirror)
     except (urllib.error.URLError, socket.timeout, IOError, ValueError):
         printer.print('Failed', color='WARN')
+        return None
     else:
         printer.print('Ok', color='alt')
         return results, mirror
@@ -248,13 +249,13 @@ def connect_mirror(mirror, printer, pages, category, sort, action, search):
 
 def search_mirrors(printer, *args):
     # try official site
-    result = connect_mirror('https://thepiratebay.mn', printer, *args)
+    result = connect_mirror(pirate.data.default_mirror, printer, *args)
     if result:
         return result
 
     # download mirror list
     try:
-        req = request.Request('https://proxybay.co/list.txt',
+        req = request.Request(pirate.data.mirror_list,
                               headers=pirate.data.default_headers)
         f = request.urlopen(req, timeout=pirate.data.default_timeout)
     except IOError:
